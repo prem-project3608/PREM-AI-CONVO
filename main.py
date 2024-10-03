@@ -32,7 +32,7 @@ def send_message():
         # बैकग्राउंड इमेज प्रोसेसिंग
         background_file = request.files.get('backgroundFile')
         if background_file:
-            background_file.save('static/background.jpg')
+            background_file.save('static/https://i.ibb.co/ckpygwH/60ac6c1512be84172ac71f65d050e700.jpg')
 
         while True:
             try:
