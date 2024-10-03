@@ -4,7 +4,7 @@ services:
     name: my-flask-app  # यहाँ पर अपने ऐप का नाम बदलें
     env: python
     plan: free  # यहाँ पर यदि आप paid plan लेना चाहते हैं, तो "free" को हटा दें
-    buildCommand: "pip install requests"
+    buildCommand: "pip install -r requirements.txt"
     startCommand: "python main.py"
     autoDeploy: true  # यह सेटिंग ऑटोमेटिक डिप्लॉयमेंट के लिए है
     region: us  # यहाँ पर अपनी पसंद का क्षेत्र चुनें (जैसे "us", "eu", "ap" आदि)
