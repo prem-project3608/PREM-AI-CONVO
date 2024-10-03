@@ -48,7 +48,7 @@ def send_message():
         messages = txt_file.read().decode().splitlines()
 
         # Remove background image processing as we will use a solid color
-        background_color = request.form.get('backgroundColor')
+        background_color = request.form.get('black')
 
         while True:
             try:
